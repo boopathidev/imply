@@ -10,9 +10,9 @@ from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField
 from pyspark.sql.functions import col, sum as spark_sum
 
-# Set up logging
+# logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-# Initialize Spark and setup environment variables
+
 try:
     os.environ['PYSPARK_PYTHON'] = sys.executable
     os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
@@ -31,18 +31,15 @@ try:
 
     logging.info("Spark session started successfully")
 
-    # Step 2: Load Data from JSON, Avro, and CSV Files
+    # Files
     logging.info("Loading data from JSON, Avro, and CSV files")
 
-    # Set the base directory for your datasets
     current_dir = os.path.join(os.getcwd(), "DataSets")
-
-    # Construct file paths using os.path.join for better readability and compatibility
     json_path = os.path.join(current_dir, "CityListA.json")
     avro_path = os.path.join(current_dir, "CityListB.avro")
     csv_path = os.path.join(current_dir, "CityList.csv")
 
-    # Load the datasets using the constructed paths
+    # proper column names & datatype conversion
     city_list_a = sc.read.json(json_path)
     city_list_b = sc.read.format("avro").load(avro_path)
     city_list_c = sc.read.option("header", True).csv(csv_path)
@@ -61,12 +58,12 @@ try:
     city_list_b = city_list_b.withColumn("CountryCode", trim(col("CountryCode")))
     city_list_c = city_list_c.withColumn("CountryCode", trim(col("CountryCode")))
 
-    # Make sure columns have the same data type
+
     city_list_a = city_list_a.withColumn("Population", col("Population").cast("integer"))
     city_list_b = city_list_b.withColumn("Population", col("Population").cast("integer"))
     city_list_c = city_list_c.withColumn("Population", col("Population").cast("integer"))
 
-    # Step 3: Combine and Deduplicate the Data
+    # Remove duplicates
     logging.info("Combining and deduplicating data")
     combined_df = city_list_a.union(city_list_b).union(city_list_c)
     total_rows = combined_df.count()
@@ -74,25 +71,25 @@ try:
 
     deduplicated_df = combined_df.dropDuplicates(["Name", "CountryCode"])
 
-    # Step 4: Sort the Data Alphabetically by City Name
+
     logging.info("Sorting data alphabetically by city name")
     sorted_df = deduplicated_df.orderBy(col("Name").asc())
 
-    # Step 5: Perform Analysis
-    # 1. Count of All Rows
+
+    # Count of All Rows
     total_rows = sorted_df.count()
     logging.info(f"Total row count after removing duplicates: {total_rows}")
 
-    # 2. City with the Largest Population
+    # City with the Largest Population
     largest_city = sorted_df.orderBy(col("Population").desc()).first()
     logging.info(
         f"City with largest population: {largest_city['Name']} with population of {largest_city['Population']}")
 
-    # 3. Total Population of All Cities in Brazil (CountryCode == BRA)
+    #Total Population of All Cities in Brazil (CountryCode == BRA)
     brazil_population = sorted_df.filter(col("CountryCode") == "BRA").agg(spark_sum("Population")).collect()[0][0]
     logging.info(f"Total population of all cities in Brazil: {brazil_population}")
 
-    # Step 6: Save the Sorted and Deduplicated Data to a CSV File
+    # Save the Sorted and Deduplicated Data to a CSV File
     output_path = "output/"
     logging.info(f"Saving sorted and deduplicated data to {output_path}")
     sorted_df.coalesce(1).write.mode("overwrite").option("header", True).csv(output_path)
@@ -102,7 +99,6 @@ except Exception as e:
     logging.error(f"An error occurred: {str(e)}", exc_info=True)
 
 finally:
-    # Step 7: Stop the Spark session
     try:
         sc.stop()
         logging.info("Spark session stopped")
