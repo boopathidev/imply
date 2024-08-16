@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="524f1e65-1536-43da-a761-4ca3439290b5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/.part-00000-b0a4f2a9-2135-4b1a-af74-df6b8efce091-c000.csv.crc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/part-00000-b0a4f2a9-2135-4b1a-af74-df6b8efce091-c000.csv" beforeDir="false" />
-    </list>
+    <list default="true" id="524f1e65-1536-43da-a761-4ca3439290b5" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
