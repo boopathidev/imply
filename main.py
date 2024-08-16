@@ -33,7 +33,7 @@ try:
 
     # Step 2: Load Data from JSON, Avro, and CSV Files
     logging.info("Loading data from JSON, Avro, and CSV files")
-  
+
     # Set the base directory for your datasets
     current_dir = os.path.join(os.getcwd(), "DataSets")
 
@@ -46,6 +46,25 @@ try:
     city_list_a = sc.read.json(json_path)
     city_list_b = sc.read.format("avro").load(avro_path)
     city_list_c = sc.read.option("header", True).csv(csv_path)
+
+    city_list_a = city_list_a.select("Name", "CountryCode", "Population")
+    city_list_b = city_list_b.select("Name", "CountryCode", "Population")
+    city_list_c = city_list_c.select("Name", "CountryCode", "Population")
+
+    from pyspark.sql.functions import trim
+
+    city_list_a = city_list_a.withColumn("Name", trim(col("Name")))
+    city_list_b = city_list_b.withColumn("Name", trim(col("Name")))
+    city_list_c = city_list_c.withColumn("Name", trim(col("Name")))
+
+    city_list_a = city_list_a.withColumn("CountryCode", trim(col("CountryCode")))
+    city_list_b = city_list_b.withColumn("CountryCode", trim(col("CountryCode")))
+    city_list_c = city_list_c.withColumn("CountryCode", trim(col("CountryCode")))
+
+    # Make sure columns have the same data type
+    city_list_a = city_list_a.withColumn("Population", col("Population").cast("integer"))
+    city_list_b = city_list_b.withColumn("Population", col("Population").cast("integer"))
+    city_list_c = city_list_c.withColumn("Population", col("Population").cast("integer"))
 
     # Step 3: Combine and Deduplicate the Data
     logging.info("Combining and deduplicating data")
