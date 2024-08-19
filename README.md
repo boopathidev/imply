@@ -56,4 +56,7 @@ To improve the performance of your PySpark script, consider the following strate
 - **Distributed Storage System:**
   - **HDFS:** Use Hadoop Distributed File System (HDFS) to spread data across multiple nodes.
   - **Cloud Storage:** Utilize cloud storage services such as Amazon S3, Google Cloud Storage, or Azure Blob Storage.
-  - **Iceberg:** Consider using Apache Iceberg for high-performance handling of large analytic tables.
+  - **Iceberg/Hudi** Consider using Apache Iceberg/Hudi for high-performance handling of large analytic tables.
+
+## Testing against OLAP databases:
+    - The data was likewise put into Snowflake and Duckdb, and the same tests were performed. 
